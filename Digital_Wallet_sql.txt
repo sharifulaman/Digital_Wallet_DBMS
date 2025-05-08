@@ -1,0 +1,239 @@
+1.User Table 
+CREATE TABLE Users (
+    User_id VARCHAR2(20) PRIMARY KEY,
+    User_name VARCHAR2(50) NOT NULL,
+    User_email VARCHAR2(100) UNIQUE NOT NULL,
+    Password VARCHAR2(100) NOT NULL,
+    Created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    Account_status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (Account_status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED'))
+);
+
+2. Wallet Table
+CREATE TABLE Wallet (
+    Wallet_id VARCHAR2(20) PRIMARY KEY,
+    Balance NUMBER(15,2) DEFAULT 0.00,
+    Last_updated TIMESTAMP DEFAULT SYSTIMESTAMP,
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_wallet_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+3.Bank Account Table
+CREATE TABLE Bank_Account (
+    Bank_id VARCHAR2(20) PRIMARY KEY,
+    Account_number VARCHAR2(30) NOT NULL,
+    Account_type VARCHAR2(30) NOT NULL,
+    Bank_name VARCHAR2(50) NOT NULL,
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_bank_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+4.KYC Details Table
+CREATE TABLE KYC_Details (
+    Kyc_id VARCHAR2(20) PRIMARY KEY,
+    Nid_number VARCHAR2(30) UNIQUE NOT NULL,
+    Name VARCHAR2(50) NOT NULL,
+    Date_of_birth DATE NOT NULL,
+    Address VARCHAR2(200) NOT NULL,
+    Verification_status VARCHAR2(20) DEFAULT 'PENDING' CHECK (Verification_status IN ('PENDING', 'VERIFIED', 'REJECTED')),
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_kyc_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+5.Bill Payment Table
+CREATE TABLE Bill_Payment (
+    Bill_id VARCHAR2(20) PRIMARY KEY,
+    Bill_type VARCHAR2(30) NOT NULL,
+    Bill_amount NUMBER(10,2) NOT NULL,
+    Payment_date TIMESTAMP DEFAULT SYSTIMESTAMP,
+    Bill_status VARCHAR2(20) DEFAULT 'PENDING' CHECK (Bill_status IN ('PENDING', 'PAID', 'FAILED')),
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_bill_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+6.Login History Table
+CREATE TABLE Login_History (
+    Login_id VARCHAR2(20) PRIMARY KEY,
+    Key VARCHAR2(100) NOT NULL,
+    Login_time TIMESTAMP DEFAULT SYSTIMESTAMP,
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_login_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+7.OTP Verification Table
+CREATE TABLE OTP_Verification (
+    Otp_id VARCHAR2(20) PRIMARY KEY,
+    Otp_code VARCHAR2(10) NOT NULL,
+    Otp_created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+    Otp_status VARCHAR2(20) DEFAULT 'UNUSED' CHECK (Otp_status IN ('UNUSED', 'USED', 'EXPIRED')),
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_otp_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+8.Transaction Table
+CREATE TABLE Transactions (
+    Transaction_id VARCHAR2(20) PRIMARY KEY,
+    Tra_type VARCHAR2(30) NOT NULL CHECK (Tra_type IN ('DEPOSIT', 'WITHDRAWAL', 'TRANSFER', 'PAYMENT')),
+    Tra_amount NUMBER(15,2) NOT NULL,
+    Tra_status VARCHAR2(20) DEFAULT 'PENDING' CHECK (Tra_status IN ('PENDING', 'COMPLETED', 'FAILED')),
+    Description VARCHAR2(200),
+    Timestamp TIMESTAMP DEFAULT SYSTIMESTAMP,
+    User_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_trans_user FOREIGN KEY (User_id) REFERENCES Users(User_id)
+);
+
+9. Merchant Table
+CREATE TABLE Merchant (
+    Merchant_id VARCHAR2(20) PRIMARY KEY,
+    Mar_name VARCHAR2(50) NOT NULL,
+    Mar_status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (Mar_status IN ('ACTIVE', 'INACTIVE')),
+    Api_key VARCHAR2(100) UNIQUE NOT NULL,
+    Transaction_id VARCHAR2(20) NOT NULL,
+    CONSTRAINT fk_merchant_trans FOREIGN KEY (Transaction_id) REFERENCES Transactions(Transaction_id)
+);
+
+Insert Query:
+1.Users:
+INSERT INTO Users (User_id, User_name, User_email, Password, Account_status) 
+VALUES ('U001', 'Lionel Messi', 'messi@aiub.edu', 'password123', 'ACTIVE');
+
+INSERT INTO Users (User_id, User_name, User_email, Password, Account_status) 
+VALUES ('U002', 'Cristiano Ronaldo', 'ronaldo@aiub.edu', 'cr7goat', 'ACTIVE');
+
+INSERT INTO Users (User_id, User_name, User_email, Password, Account_status) 
+VALUES ('U003', 'Neymar Jr', 'neymar@aiub.edu', 'samba10', 'ACTIVE');
+
+INSERT INTO Users (User_id, User_name, User_email, Password, Account_status) 
+VALUES ('U004', 'Kylian Mbappé', 'mbappe@aiub.edu', 'kmbappe7', 'ACTIVE');
+
+INSERT INTO Users (User_id, User_name, User_email, Password, Account_status) 
+VALUES ('U005', 'Robert Lewandowski', 'lewa@aiub.edu', 'lewagoal9', 'ACTIVE');
+
+2. Wallet
+INSERT INTO Wallet (Wallet_id, Balance, User_id) 
+VALUES ('W001', 5000.00, 'U001');
+
+INSERT INTO Wallet (Wallet_id, Balance, User_id) 
+VALUES ('W002', 7500.50, 'U002');
+
+INSERT INTO Wallet (Wallet_id, Balance, User_id) 
+VALUES ('W003', 3200.75, 'U003');
+
+INSERT INTO Wallet (Wallet_id, Balance, User_id) 
+VALUES ('W004', 10000.00, 'U004');
+
+INSERT INTO Wallet (Wallet_id, Balance, User_id) 
+VALUES ('W005', 4500.25, 'U005');
+3. Bank Account
+INSERT INTO Bank_Account (Bank_id, Account_number, Account_type, Bank_name, User_id) 
+VALUES ('B001', '1234567890', 'SAVINGS', 'City Bank', 'U001');
+
+INSERT INTO Bank_Account (Bank_id, Account_number, Account_type, Bank_name, User_id) 
+VALUES ('B002', '9876543210', 'CURRENT', 'HSBC', 'U002');
+
+INSERT INTO Bank_Account (Bank_id, Account_number, Account_type, Bank_name, User_id) 
+VALUES ('B003', '4567891230', 'SAVINGS', 'Standard Chartered', 'U003');
+
+INSERT INTO Bank_Account (Bank_id, Account_number, Account_type, Bank_name, User_id) 
+VALUES ('B004', '7891234560', 'CURRENT', 'BRAC Bank', 'U004');
+
+INSERT INTO Bank_Account (Bank_id, Account_number, Account_type, Bank_name, User_id) 
+VALUES ('B005', '3216549870', 'SAVINGS', 'Eastern Bank', 'U005');
+
+4. KYC
+INSERT INTO KYC_Details (Kyc_id, Nid_number, Name, Date_of_birth, Address, Verification_status, User_id) 
+VALUES ('K001', '199001010001', 'Lionel Messi', TO_DATE('24-JUN-1987', 'DD-MON-YYYY'), 'Rosario, Argentina', 'VERIFIED', 'U001');
+
+INSERT INTO KYC_Details (Kyc_id, Nid_number, Name, Date_of_birth, Address, Verification_status, User_id) 
+VALUES ('K002', '198502050002', 'Cristiano Ronaldo', TO_DATE('05-FEB-1985', 'DD-MON-YYYY'), 'Funchal, Portugal', 'VERIFIED', 'U002');
+
+INSERT INTO KYC_Details (Kyc_id, Nid_number, Name, Date_of_birth, Address, Verification_status, User_id) 
+VALUES ('K003', '199202050003', 'Neymar Jr', TO_DATE('05-FEB-1992', 'DD-MON-YYYY'), 'Mogi das Cruzes, Brazil', 'VERIFIED', 'U003');
+
+INSERT INTO KYC_Details (Kyc_id, Nid_number, Name, Date_of_birth, Address, Verification_status, User_id) 
+VALUES ('K004', '199812200004', 'Kylian Mbappé', TO_DATE('20-DEC-1998', 'DD-MON-YYYY'), 'Paris, France', 'VERIFIED', 'U004');
+
+INSERT INTO KYC_Details (Kyc_id, Nid_number, Name, Date_of_birth, Address, Verification_status, User_id) 
+VALUES ('K005', '198808210005', 'Robert Lewandowski', TO_DATE('21-AUG-1988', 'DD-MON-YYYY'), 'Warsaw, Poland', 'PENDING', 'U005');
+
+5. Bill Payment
+INSERT INTO Bill_Payment (Bill_id, Bill_type, Bill_amount, Bill_status, User_id) 
+VALUES ('BL001', 'ELECTRICITY', 1500.00, 'PAID', 'U001');
+
+INSERT INTO Bill_Payment (Bill_id, Bill_type, Bill_amount, Bill_status, User_id) 
+VALUES ('BL002', 'WATER', 800.50, 'PAID', 'U002');
+
+INSERT INTO Bill_Payment (Bill_id, Bill_type, Bill_amount, Bill_status, User_id) 
+VALUES ('BL003', 'INTERNET', 1200.00, 'FAILED', 'U003');
+
+INSERT INTO Bill_Payment (Bill_id, Bill_type, Bill_amount, Bill_status, User_id) 
+VALUES ('BL004', 'GAS', 750.75, 'PENDING', 'U004');
+
+INSERT INTO Bill_Payment (Bill_id, Bill_type, Bill_amount, Bill_status, User_id) 
+VALUES ('BL005', 'PHONE', 500.00, 'PAID', 'U005');
+
+6. Login History
+INSERT INTO Login_History (Login_id, Key, User_id) 
+VALUES ('L001', 'a1b2c3d4e5', 'U001');
+
+INSERT INTO Login_History (Login_id, Key, User_id) 
+VALUES ('L002', 'f6g7h8i9j0', 'U002');
+
+INSERT INTO Login_History (Login_id, Key, User_id) 
+VALUES ('L003', 'k1l2m3n4o5', 'U003');
+
+INSERT INTO Login_History (Login_id, Key, User_id) 
+VALUES ('L004', 'p6q7r8s9t0', 'U004');
+
+INSERT INTO Login_History (Login_id, Key, User_id) 
+VALUES ('L005', 'u1v2w3x4y5', 'U005');
+
+7.OTP 
+INSERT INTO OTP_Verification (Otp_id, Otp_code, Otp_status, User_id) 
+VALUES ('O001', '123456', 'USED', 'U001');
+
+INSERT INTO OTP_Verification (Otp_id, Otp_code, Otp_status, User_id) 
+VALUES ('O002', '654321', 'EXPIRED', 'U002');
+
+INSERT INTO OTP_Verification (Otp_id, Otp_code, Otp_status, User_id) 
+VALUES ('O003', '987654', 'USED', 'U003');
+
+INSERT INTO OTP_Verification (Otp_id, Otp_code, Otp_status, User_id) 
+VALUES ('O004', '456789', 'UNUSED', 'U004');
+
+INSERT INTO OTP_Verification (Otp_id, Otp_code, Otp_status, User_id) 
+VALUES ('O005', '321654', 'USED', 'U005');
+
+8. Transaction
+INSERT INTO Transactions (Transaction_id, Tra_type, Tra_amount, Tra_status, Description, User_id) 
+VALUES ('T001', 'DEPOSIT', 2000.00, 'COMPLETED', 'Bank transfer', 'U001');
+
+INSERT INTO Transactions (Transaction_id, Tra_type, Tra_amount, Tra_status, Description, User_id) 
+VALUES ('T002', 'TRANSFER', 500.00, 'COMPLETED', 'Send to friend', 'U002');
+
+INSERT INTO Transactions (Transaction_id, Tra_type, Tra_amount, Tra_status, Description, User_id) 
+VALUES ('T003', 'WITHDRAWAL', 1000.00, 'FAILED', 'ATM withdrawal', 'U003');
+
+INSERT INTO Transactions (Transaction_id, Tra_type, Tra_amount, Tra_status, Description, User_id) 
+VALUES ('T004', 'PAYMENT', 750.50, 'COMPLETED', 'Restaurant bill', 'U004');
+
+INSERT INTO Transactions (Transaction_id, Tra_type, Tra_amount, Tra_status, Description, User_id) 
+VALUES ('T005', 'DEPOSIT', 1500.00, 'PENDING', 'Mobile banking', 'U005');
+
+9. Marchant
+
+INSERT INTO Merchant (Merchant_id, Mar_name, Mar_status, Api_key, Transaction_id) 
+VALUES ('M001', 'Adidas Store', 'ACTIVE', 'adidas123apikey', 'T001');
+
+INSERT INTO Merchant (Merchant_id, Mar_name, Mar_status, Api_key, Transaction_id) 
+VALUES ('M002', 'Nike Online', 'ACTIVE', 'nike456apikey', 'T002');
+
+INSERT INTO Merchant (Merchant_id, Mar_name, Mar_status, Api_key, Transaction_id) 
+VALUES ('M003', 'Puma Shop', 'INACTIVE', 'puma789apikey', 'T003');
+
+INSERT INTO Merchant (Merchant_id, Mar_name, Mar_status, Api_key, Transaction_id) 
+VALUES ('M004', 'Amazon Sports', 'ACTIVE', 'amazon012apikey', 'T004');
+
+INSERT INTO Merchant (Merchant_id, Mar_name, Mar_status, Api_key, Transaction_id) 
+VALUES ('M005', 'eBay Footwear', 'ACTIVE', 'ebay345apikey', 'T005');
+
+
