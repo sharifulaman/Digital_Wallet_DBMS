@@ -29,9 +29,9 @@ The **Digital Wallet System** is a relational database design for a digital wall
 
 ## 📁 Project Structure
 ### ER Diagram
-![ER Diagram](ER_diagram.jpg)
+![ER Diagram](ED.jpg)
 
 
 ### Schema Diagram
 
-![Schema Diagram](Schema_diagram.jpg)
+![Schema Diagram](SD.jpg)
