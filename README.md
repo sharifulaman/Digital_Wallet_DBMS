@@ -34,4 +34,4 @@ The **Digital Wallet System** is a relational database design for a digital wall
 
 ### Schema Diagram
 
-![Schema Diagram](SD.jpg)
+![Schema Diagram](SD.png)
